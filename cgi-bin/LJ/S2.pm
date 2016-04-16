@@ -2375,6 +2375,10 @@ sub Page
     $p->{head_content} .= qq{<link rel="help" href="$LJ::SITEROOT/support/faq" />\n};
     $p->{head_content} .= qq{<link rel="apple-touch-icon" href="$LJ::APPLE_TOUCH_ICON" />\n}
          if $LJ::APPLE_TOUCH_ICON;
+    unless ( $opts->{'suppress_facebook_default_icon'} ) {
+        my $fbpic = $u->userpic ? $u->userpic->url : "$LJ::IMGPREFIX/nouserpic.png";
+        $p->{head_content} .= qq{<meta property="og:image" content="$fbpic"/>\n};
+    }
     # Identity (type I) accounts only have read views
     $p->{views_order} = [ 'read', 'userinfo' ] if $u->is_identity;
     # feed accounts only have recent entries views

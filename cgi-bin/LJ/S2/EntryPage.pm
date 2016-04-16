@@ -28,6 +28,9 @@ sub EntryPage
 
     my $get = $opts->{'getargs'};
 
+    # We'll use the icon of this post below
+    $opts->{'suppress_facebook_default_icon'} = 1;
+
     my $p = Page($u, $opts);
     $p->{'_type'} = "EntryPage";
     $p->{'view'} = "entry";
@@ -65,6 +68,8 @@ sub EntryPage
     if ($LJ::UNICODE) {
         $p->{'head_content'} .= '<meta http-equiv="Content-Type" content="text/html; charset='.$opts->{'saycharset'}."\" />\n";
     }
+    my $fbpic = $entry->userpic ? $entry->userpic->url : $u->userpic ? $u->userpic->url : "$LJ::IMGPREFIX/nouserpic.png";
+    $p->{head_content} .= qq{<meta property="og:image" content="$fbpic"/>\n};
 
     my $prev_url = S2::Builtin::LJ::Entry__get_link( $opts->{ctx}, $s2entry, "nav_prev" )->{url};
     $p->{head_content} .= qq{<link rel="prev" href="$prev_url" />\n} if $prev_url;
