@@ -1075,6 +1075,15 @@ general /openid/approve.bml.form.request
 general /openid/approve.bml.form.title
 general /openid/index.bml.beta.content
 general /openid/index.bml.beta.heading
+general /openid/options.bml.error.form_tampering
+general /openid/options.bml.error.login
+general /openid/options.bml.error.no_support
+general /openid/options.bml.error.title
+general /openid/options.bml.main.delete
+general /openid/options.bml.main.none
+general /openid/options.bml.main.trust.content
+general /openid/options.bml.main.trust.heading
+general /openid/options.bml.title
 general /poll/index.bml.gotocreate2
 general /register.bml.ask.header
 general /register.bml.email.body
@@ -1139,7 +1148,6 @@ general customize.cats.modern
 general customize.cats.nature
 general customize.cats.occasions
 general customize.cats.pattern
-general customize.cats.special
 general customize.cats.sponsors
 general customize.cats.sup
 general customize.cats.tech
@@ -1834,3 +1842,9 @@ general /views/media/home.tt.edit
 general /views/media/index.tt.title
 general /views/media/index.tt.intro
 general /views/media/index.tt.intro.edit
+
+general email.newacct5.body
+
+general widget.createaccount.error.birthdate.invalid
+
+general /profile.bml.details.userpics

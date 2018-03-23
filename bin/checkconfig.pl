@@ -192,9 +192,6 @@ my %modules = (
         'deb' => 'libmail-gnupg-perl',
         'opt' => "Required for email posting.",
     },
-    "IP::Country::Fast" => {
-        'opt' => "Required for country lookup with IP address.",
-    },
     "GTop" => {},
     "Apache2::RequestRec"   => {
         'deb' => "libapache2-mod-perl2",
@@ -299,6 +296,12 @@ my %modules = (
     "Text::Wrap" => {
         ver => '2013.0523', # issue #1447
     },
+    "Moose" => {
+        opt => "Used for BlobStore support of S3",
+    },
+    "Text::Fuzzy" => {
+        ver => '0.27',
+    }
 );
 
 

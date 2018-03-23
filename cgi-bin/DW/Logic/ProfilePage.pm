@@ -9,7 +9,7 @@
 #      Mark Smith <mark@dreamwidth.org>
 #      Janine Smith <janine@netrophic.com>
 #
-# Copyright (c) 2009-2014 by Dreamwidth Studios, LLC.
+# Copyright (c) 2009-2018 by Dreamwidth Studios, LLC.
 #
 # This program is free software; you may redistribute it and/or modify it under
 # the same terms as Perl itself.  For a copy of the license, please reference
@@ -110,11 +110,11 @@ sub userpic {
             if ( $u->get_userpic_count ) {
                 $ret->{userpic_url} = $u->allpics_base;
                 $ret->{caption_text} = LJ::Lang::ml( '.section.edit' );
-                $ret->{caption_url} = "$LJ::SITEROOT/editicons?authas=$user"
+                $ret->{caption_url} = "$LJ::SITEROOT/manage/icons?authas=$user"
             } else {
-                $ret->{userpic_url} = "$LJ::SITEROOT/editicons?authas=$user";
+                $ret->{userpic_url} = "$LJ::SITEROOT/manage/icons?authas=$user";
                 $ret->{caption_text} = LJ::Lang::ml( '.userpic.upload' );
-                $ret->{caption_url} = "$LJ::SITEROOT/editicons?authas=$user"
+                $ret->{caption_url} = "$LJ::SITEROOT/manage/icons?authas=$user"
             }
         } else {
             if ( $u->get_userpic_count ) {
@@ -228,7 +228,7 @@ sub support_stats {
 }
 
 
-# return array of statistic strings
+# return array of entry statistic strings
 sub entry_stats {
     my $self = $_[0];
 
@@ -247,7 +247,7 @@ sub entry_stats {
 }
 
 
-# return array of statistic strings
+# return array of tag statistic strings
 sub tag_stats {
     my $self = $_[0];
 
@@ -266,7 +266,7 @@ sub tag_stats {
 }
 
 
-# return array of statistic strings
+# return array of memory statistic strings
 sub memory_stats {
     my $self = $_[0];
 
@@ -285,20 +285,35 @@ sub memory_stats {
 }
 
 
-# return array of statistic strings
+# return array of userpic statistic strings
 sub userpic_stats {
     my $self = $_[0];
 
     my $u = $self->{u};
-    my @ret;
+    return () if $u->is_syndicated;
+
+    my @ret = ();
 
     my $ct = $u->get_userpic_count;
-    push @ret, LJ::Lang::ml( '.details.userpics', {
-        num_raw => $ct,
-        num_comma => LJ::commafy( $ct ),
-        aopts => "href='" . $u->allpics_base . "'",
-    } )
-        unless $u->is_syndicated;
+    if ( $u->equals( $self->{remote} ) ) {
+        my $slots = $u->userpic_quota;
+        my $bonus = $u->prop('bonus_icons') || 0;
+        push @ret, LJ::Lang::ml( '.details.userpics.self', {
+                                 uploaded_raw => $ct,
+                                 uploaded_comma => LJ::commafy( $ct ),
+                                 slots_raw => $slots,
+                                 slots_comma => LJ::commafy( $slots ),
+                                 bonus_raw => $bonus,
+                                 bonus_comma => LJ::commafy( $bonus ),
+                                 aopts => "href='" . $u->allpics_base . "'",
+                               } );
+    } else {
+        push @ret, LJ::Lang::ml( '.details.userpics.others', {
+                                 uploaded_raw => $ct,
+                                 uploaded_comma => LJ::commafy( $ct ),
+                                 aopts => "href='" . $u->allpics_base . "'",
+                               } );
+    }
 
     return @ret;
 }
@@ -719,23 +734,12 @@ sub external_services {
         };
     }
 
-    if ( my $aol = $u->prop( 'aolim') ) {
-        my $eaol = LJ::eurl( $aol );
-        $eaol =~ s/ //g;
-        push @ret, {
-            type => 'aim',
-            text => LJ::ehtml( $aol ),
-            image => 'aim.gif',
-            title_ml => '.im.aol',
-        };
-    }
-
     if ( my $delicious = $u->prop( 'delicious' ) ) {
         my $delicious = LJ::eurl( $delicious );
         push @ret, {
             type => 'delicious',
             text => LJ::ehtml( $delicious ),
-            url => "http://www.delicious.com/$delicious",
+            url => "https://del.icio.us/$delicious",
             image => 'delicious.png',
             title_ml => '.service.delicious',
         };
@@ -813,6 +817,28 @@ sub external_services {
             url => "http://wwp.icq.com/$eicq",
             image => 'icq.gif',
             title_ml => '.im.icq',
+        };
+    }
+
+    if ( my $imzy = $u->prop( 'imzy' ) ) {
+        my $eimzy = LJ::eurl( $imzy );
+        push @ret, {
+            type => 'imzy',
+            text => LJ::ehtml( $imzy ),
+            url => "https://www.imzy.com/\@$eimzy",
+            image => 'imzy.png',
+            title_ml => '.service.imzy',
+        };
+    }
+
+    if ( my $instagram = $u->prop( 'instagram' ) ) {
+        my $einstagram = LJ::eurl( $instagram );
+        push @ret, {
+            type => 'instagram',
+            text => LJ::ehtml( $instagram ),
+            url => "https://www.instagram.com/$einstagram",
+            image => 'instagram.png',
+            title_ml => '.service.instagram',
         };
     }
 

@@ -7,7 +7,7 @@
 # Authors:
 #      Mark Smith <mark@dreamwidth.org>
 #
-# Copyright (c) 2010-2013 by Dreamwidth Studios, LLC.
+# Copyright (c) 2010-2018 by Dreamwidth Studios, LLC.
 #
 # This program is free software; you may redistribute it and/or modify it under
 # the same terms as Perl itself. For a copy of the license, please reference
@@ -58,6 +58,13 @@ sub media_manage_handler {
     $rv->{maxpage} = POSIX::ceil(scalar @media / 20);
     $rv->{valid_sizes} =[ %VALID_SIZES ];
     $rv->{convert_time} = \&LJ::mysql_time;
+
+    my $media_usage = DW::Media->get_usage_for_user( $rv->{u} );
+    my $media_quota = DW::Media->get_quota_for_user( $rv->{u} );
+
+    $rv->{usage} = sprintf( "%0.3f MB", $media_usage / 1024 / 1024 );
+    $rv->{quota} = sprintf( "%0.1f MB", $media_quota / 1024 / 1024 );
+    $rv->{percentage} = sprintf( "%0.1f%%", $media_usage / $media_quota * 100 );
 
     return DW::Template->render_template( 'media/index.tt', $rv );
 }
@@ -134,6 +141,13 @@ sub media_bulkedit_handler {
     }
 
     my @media = DW::Media->get_active_for_user( $rv->{remote}, width => 200, height => 200 );
+
+    my $media_usage = DW::Media->get_usage_for_user( $rv->{u} );
+    my $media_quota = DW::Media->get_quota_for_user( $rv->{u} );
+
+    $rv->{usage} = sprintf( "%0.3f MB", $media_usage / 1024 / 1024 );
+    $rv->{quota} = sprintf( "%0.1f MB", $media_quota / 1024 / 1024 );
+    $rv->{percentage} = sprintf( "%0.1f%%", $media_usage / $media_quota * 100 );
 
     $rv->{ehtml} = \&LJ::ehtml;
     $rv->{media} = \@media;
@@ -255,12 +269,22 @@ sub media_new_handler {
         { value => "private", text => LJ::Lang::ml( 'label.security.private2' ) },
     ];
 
+    $rv->{default_security} = $rv->{remote}->newpost_minsecurity;
+    $rv->{default_security} = 'usemask' if $rv->{default_security} eq 'friends';
+
     return DW::Template->render_template( 'media/new.tt', $rv );
 }
 
 sub media_index_handler {
     my ( $ok, $rv ) = controller();
     return $rv unless $ok;
+
+    my $media_usage = DW::Media->get_usage_for_user( $rv->{u} );
+    my $media_quota = DW::Media->get_quota_for_user( $rv->{u} );
+
+    $rv->{usage} = sprintf( "%0.3f MB", $media_usage / 1024 / 1024 );
+    $rv->{quota} = sprintf( "%0.1f MB", $media_quota / 1024 / 1024 );
+    $rv->{percentage} = sprintf( "%0.1f%%", $media_usage / $media_quota * 100 );
 
     return DW::Template->render_template( 'media/home.tt', $rv );
 }

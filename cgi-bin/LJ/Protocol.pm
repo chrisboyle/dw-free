@@ -1497,12 +1497,6 @@ sub postevent
 
                     next unless $mod->is_visible;
 
-                    $mod->migrate_prop_to_esn( "opt_nomodemail", "CommunityModeratedEntryNew",
-                                                check_enabled => sub {
-                                                        my ( $prop ) = @_;
-                                                        # opt_nomodemail is a negative prop
-                                                        return $prop eq "1" ? 0 : 1;
-                                                });
                     LJ::Event::CommunityModeratedEntryNew->new( $mod, $uowner, $modid )->fire;
                 }
             }
@@ -1665,9 +1659,6 @@ sub postevent
 
     # argh, this is all too ugly.  need to unify more postpost stuff into async
     $u->invalidate_directory_record;
-
-    # note this post in recentactions table
-    LJ::DB::note_recent_action($uowner, 'post');
 
     # Insert the slug (try to, this will fail if this slug is already used)
     my $slug = LJ::canonicalize_slug( $req->{slug} );

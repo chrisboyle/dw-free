@@ -22,14 +22,6 @@ userproplist.ao3:
   multihomed: 0
   prettyname: Archive of Our Own user account name
 
-userproplist.aolim:
-  cldversion: 0
-  datatype: char
-  des: AOL IM ScreenName
-  indexed: 1
-  multihomed: 1
-  prettyname: AOL Instant Messanger
-
 userproplist.badpassword:
   cldversion: 4
   datatype: num
@@ -237,14 +229,6 @@ userproplist.dismissed_page_notices:
   indexed: 0
   multihomed: 0
   prettyname: Dismissed Page Notices
-
-userproplist.dogeartime:
-  cldversion: 4
-  datatype: num
-  des: unixtime of most recently read friends item.  anything greater is new.
-  indexed: 0
-  multihomed: 0
-  prettyname: dog ear time
 
 userproplist.dont_load_members:
   cldversion: 4
@@ -533,6 +517,22 @@ userproplist.interest_ids_blob:
   indexed: 1
   multihomed: 0
   prettyname: Interest IDs blob
+
+userproplist.imzy:
+  cldversion: 4
+  datatype: char
+  des: Imzy account name for user profile
+  indexed: 0
+  multihomed: 0
+  prettyname: Imzy Account
+
+userproplist.instagram:
+  cldversion: 4
+  datatype: char
+  des: Instagram account name for user profile
+  indexed: 0
+  multihomed: 0
+  prettyname: Instagram Account
 
 userproplist.jabber:
   cldversion: 0
@@ -846,14 +846,6 @@ userproplist.opt_nctalklinks:
   multihomed: 0
   prettyname: Show number of comments in URL
 
-userproplist.opt_nomodemail:
-  cldversion: 4
-  datatype: bool
-  des: 1: do not send moderation emails, 0: default, send them
-  indexed: 0
-  multihomed: 0
-  prettyname: No Moderation Email
-
 userproplist.opt_notalkicons:
   cldversion: 4
   datatype: bool
@@ -901,6 +893,54 @@ userproplist.opt_sharebday:
   indexed: 0
   multihomed: 0
   prettyname: Share Birthday
+
+userproplist.opt_shortcuts:
+  cldversion: 4
+  datatype: bool
+  des: Enable keyboard shortcuts
+  indexed: 0
+  multihomed: 0
+  prettyname: Keyboard Shortcuts
+
+userproplist.opt_shortcuts_next:
+  cldversion: 4
+  datatype: char
+  des: Keyboard shortcut for next entry
+  indexed: 0
+  multihomed: 0
+  prettyname: Keyboard Shortcut Next
+
+userproplist.opt_shortcuts_prev:
+  cldversion: 4
+  datatype: char
+  des: Keyboard shortcut for previous entry
+  indexed: 0
+  multihomed: 0
+  prettyname: Keyboard Shortcut Previous
+
+userproplist.opt_shortcuts_touch:
+  cldversion: 4
+  datatype: bool
+  des: Enable touch shortcuts
+  indexed: 0
+  multihomed: 0
+  prettyname: Touch Shortcuts
+
+userproplist.opt_shortcuts_touch_next:
+  cldversion: 4
+  datatype: char
+  des: Touch shortcut for next entry
+  indexed: 0
+  multihomed: 0
+  prettyname: Touch Shortcut Next
+
+userproplist.opt_shortcuts_touch_prev:
+  cldversion: 4
+  datatype: char
+  des: Touch shortcut for previous entry
+  indexed: 0
+  multihomed: 0
+  prettyname: Touch Shortcut Previous
 
 userproplist.opt_showbday:
   cldversion: 4

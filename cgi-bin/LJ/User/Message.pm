@@ -16,6 +16,7 @@ use strict;
 no warnings 'uninitialized';
 
 use Carp;
+use Text::Fuzzy;
 use LJ::Subscription;
 
 ########################################################################
@@ -275,10 +276,9 @@ sub can_add_inbox_subscription {
 
 # can this user use ESN?
 sub can_use_esn {
-    my $u = shift;
+    my $u = $_[0];
     return 0 if $u->is_community || $u->is_syndicated;
-    return 0 unless LJ::is_enabled('esn');
-    return LJ::is_enabled('esn_ui', $u);
+    return LJ::is_enabled( 'esn' );
 }
 
 
@@ -535,24 +535,20 @@ sub check_email
                          "Your email address domain is invalid.");
     }
 
-    # Catch misspellings of hotmail.com
-    if ($domain =~ /^(otmail|hotmial|hotmil|hotamail|hotmaul|hoatmail|hatmail|htomail)\.(cm|co|com|cmo|om)$/ or
-        $domain =~ /^hotmail\.(cm|co|om|cmo)$/)
-    {
-        return $reject->("bad_hotmail_spelling",
-                         "You gave $email as your email address.  Are you sure you didn't mean hotmail.com?");
-    }
-
-    # Catch misspellings of aol.com
-    elsif ($domain =~ /^(ol|aoll)\.(cm|co|com|cmo|om)$/ or
-           $domain =~ /^aol\.(cm|co|om|cmo)$/)
-    {
-        return $reject->("bad_aol_spelling",
-                         "You gave $email as your email address.  Are you sure you didn't mean aol.com?");
-    }
+    # Catch misspellings of gmail.com, yahoo.com, hotmail.com, outlook.com,
+    # aol.com, live.com.
+    # https://github.com/dreamwidth/dw-free/issues/993#issuecomment-357466645
+    # explains where 3 comes from.
+    my $tf_domain = Text::Fuzzy->new( $domain, max => 3, trans => 1 );
+    my @common_domains = ( 'gmail.com', 'yahoo.com', 'hotmail.com',
+                           'outlook.com', 'aol.com', 'live.com' );
+    my $nearest = $tf_domain->nearest( \@common_domains );
+    return $reject->( "bad_spelling",
+                      "You gave $email as your email address. Are you sure you didn't mean $common_domains[$nearest]?" )
+        if defined $nearest && $tf_domain->last_distance > 0;
 
     # Catch web addresses (two or more w's followed by a dot)
-    elsif ($username =~ /^www*\./)
+    if ($username =~ /^www*\./)
     {
         return $reject->("web_address",
                          "You gave $email as your email address, but it looks more like a web address to me.");

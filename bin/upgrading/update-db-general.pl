@@ -908,6 +908,8 @@ register_tabledrop("txtmsg");
 register_tabledrop("comm_promo_list");
 register_tabledrop("incoming_email_handle");
 register_tabledrop("backupdirty");
+register_tabledrop("actionhistory");
+register_tabledrop("recentactions");
 
 
 register_tablecreate("infohistory", <<'EOC');
@@ -1768,7 +1770,7 @@ CREATE TABLE userlog (
     action        VARCHAR(30) NOT NULL,
     actiontarget  INT UNSIGNED,
     remoteid      INT UNSIGNED,
-    ip            VARCHAR(15),
+    ip            VARCHAR(45),
     uniq          VARCHAR(15),
     extra         VARCHAR(255),
 
@@ -1838,25 +1840,6 @@ CREATE TABLE logkwsum (
     PRIMARY KEY (journalid, kwid, security),
     KEY (journalid, security)
 )
-EOC
-
-# action history tables
-register_tablecreate("actionhistory", <<'EOC');
-CREATE TABLE actionhistory (
-    time      INT UNSIGNED NOT NULL,
-    clusterid TINYINT UNSIGNED NOT NULL,
-    what      CHAR(2) NOT NULL,
-    count     INT UNSIGNED NOT NULL DEFAULT 0,
-
-    INDEX(time)
-)
-EOC
-
-# TODO: why is this myisam?
-register_tablecreate("recentactions", <<'EOC');
-CREATE TABLE recentactions (
-    what CHAR(2) NOT NULL
-) ENGINE=MYISAM
 EOC
 
 # external identities
@@ -3416,14 +3399,6 @@ register_alter(sub {
                  "ALTER TABLE includetext MODIFY COLUMN inctext MEDIUMTEXT");
     }
 
-    foreach my $table (qw(recentactions actionhistory)) {
-
-        if (column_type($table, "what") =~ /^char/i) {
-            do_alter($table,
-                     "ALTER TABLE $table MODIFY COLUMN what VARCHAR(20) NOT NULL");
-        }
-    }
-
     # table format totally changed, we'll just truncate and modify
     # all of the columns since the data is just summary anyway
     if (index_name("active_user", "INDEX:time")) {
@@ -4097,6 +4072,12 @@ EOF
     if ( column_type( 'userpic2', 'description' ) eq "varchar(255)" ) {
         do_alter( 'userpic2',
             "ALTER TABLE userpic2 MODIFY COLUMN description VARCHAR(600) BINARY NOT NULL default ''");
+    }
+
+    # widen ip column for IPv6 addresses
+    if ( column_type("userlog", "ip") eq "varchar(15)" ) {
+        do_alter( "spamreports",
+                  "ALTER TABLE userlog MODIFY ip VARCHAR(45)" );
     }
 
 });
